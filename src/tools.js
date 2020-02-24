@@ -35,6 +35,7 @@ async function loadMore(page) {
 async function autoScroll(page) {
     await page.waitForSelector('.js-result-msg');
     const totalItems = await page.evaluate(() => parseInt(document.querySelector('.js-result-msg').textContent.match(/\d+/)[0], 10));
+
     const totalPageNumbers = Math.ceil(totalItems / 9);
 
     for (let index = 0; index < totalPageNumbers; index++) {
@@ -102,11 +103,7 @@ exports.getSources = async () => {
     }
 
     if (language && !search) {
-        listPages.push(`https://www.edx.org/course/?language=${encodeURIComponent(language)}`);
-    }
-
-    if (language && search) {
-        listPages.push(`https://www.edx.org/course/?search_query=${search.toLowerCase().replace(' ', '+')}&language=${encodeURIComponent(language)}`);
+        listPages.push(`https://www.edx.org/course?language=${encodeURIComponent(language)}`);
     }
 
     if (startUrls && startUrls.length > 0) {
