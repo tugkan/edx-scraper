@@ -19,7 +19,7 @@ The input of this scraper should be JSON containing the list of pages on edx tha
 | ----- | ---- | ----------- |
 | search | String | (optional)  | The keyword that you want to search on edx |
 | language | Array | (optional) List of languages that edx provides. You can fetch all courses of a language with it |
-| startUrls | Array | (optional) List of edx URLs. You should provide ony "search" or "browse" URLs |
+| startUrls | Array | (optional) List of edx URLs. You should provide only URLs from `https://www.edx.org/course` |
 | maxItems | Integer | (optional) Maximum number of items that output will contain |
 | extendOutputFunction | string | Function that takes a JQuery handle (page) as argument and returns data that will be merged with the default output. More information in [Extend output function](#extend-output-function) |
 | proxyConfig | Object | Proxy configuration |
