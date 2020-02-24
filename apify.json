@@ -1,0 +1,6 @@
+{
+	"name": "apify-edx-actor",
+	"version": "0.1",
+	"buildTag": "latest",
+	"template": "cheerio_crawler"
+}

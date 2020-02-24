@@ -1,0 +1,56 @@
+
+{
+    "title": "edx.org Scraper",
+    "description": "An actor that scrapes courses from edx.org",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "search":{
+            "title": "Search keyword",
+            "type": "string",
+            "description": "Keyword that you want to search in edx.org",
+            "editor": "textfield"
+        },
+        "language":{
+            "title": "Language",
+            "type": "string",
+            "description": "Select a language that edx.org provides",
+            "editor": "select",
+            "default": "none",
+            "enum": ["none", "English", "Spanish", "French", "chinese", "mandarin", "italian", "Russian", "simplified", "Japanese", "German", "Portuguese", "arabic", "Korean", "Dutch", "Turkish", "Hindi", "hungarian", "tibetan"],
+            "enumTitles": ["None","English", "Spanish", "French", "chinese", "mandarin", "italian", "Russian", "simplified", "Japanese", "German", "Portuguese", "arabic", "Korean", "Dutch", "Turkish", "Hindi", "hungarian", "tibetan"]
+        },
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "URLs to start with. It should be category or product detail URLs",
+            "prefill": [
+                { "url": "https://www.edx.org/course/?language=spanish" },
+                { "url": "https://www.edx.org/course/subject/health-safety" }
+            ],
+            "editor": "requestListSources"
+        },
+        "maxItems":{
+            "title": "Max Items",
+            "type": "integer",
+            "description": "Maximum number of items you want on your results",
+            "editor": "number"
+        },
+        "extendOutputFunction": {
+            "title": "Extend output function",
+            "type": "string",
+            "nullable": true,
+            "description": "Function that takes a JQuery handle ($) as argument and returns data that will be merged with the default output",
+            "prefill": "($) => { return {} }",
+            "editor": "javascript"
+        },
+        "proxyConfig": {
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Optionally use Apify Proxy",
+            "prefill": { "useApifyProxy": true, "apifyProxyGroups": ["SHADER"] },
+            "editor": "proxy"
+        }
+    },
+    "required": ["proxyConfig"]
+}
