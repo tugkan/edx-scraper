@@ -38,6 +38,7 @@ async function autoScroll(page) {
     const totalPageNumbers = Math.ceil(totalItems / 9);
 
     for (let index = 0; index < totalPageNumbers; index++) {
+        log.info(`Iterating list page: ${index + 1}`);
         await loadMore(page);
     }
 }
