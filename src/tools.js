@@ -102,7 +102,7 @@ exports.getSources = async () => {
         listPages.push(`https://www.edx.org/course?search_query=${search.toLowerCase().replace(' ', '+')}`);
     }
 
-    if (language && !search) {
+    if (language && language !== 'none' && !search) {
         listPages.push(`https://www.edx.org/course?language=${encodeURIComponent(language)}`);
     }
 
