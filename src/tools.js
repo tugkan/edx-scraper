@@ -98,7 +98,7 @@ exports.getSources = async () => {
     const coursePages = [];
 
     // Check input combinations
-    if (search && !language) {
+    if (search && (!language || language === 'none')) {
         listPages.push(`https://www.edx.org/course?search_query=${search.toLowerCase().replace(' ', '+')}`);
     }
 
