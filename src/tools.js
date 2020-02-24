@@ -5,6 +5,42 @@ const {
     utils: { log, puppeteer },
 } = Apify;
 
+// Load one page for infinite scroll
+async function loadMore(page) {
+    let height = 0;
+    const scrolled = await Promise.all([
+        page.evaluate(() => window.scrollBy(0, 100)),
+        page.waitForRequest(
+            (request) => {
+                const requestUrl = request.url();
+                return requestUrl.includes('https://www.edx.org/api/v1/catalog/search');
+            },
+            {
+                timeout: 500,
+            },
+        ).catch(() => null),
+    ]);
+
+    height += 100;
+
+    if (scrolled[1]) {
+        return height;
+    }
+
+    return await loadMore(page) + height;
+}
+
+// Get total number of items
+// Scroll until bottom
+async function autoScroll(page) {
+    const totalItems = await page.evaluate(() => parseInt(document.querySelector('.js-result-msg').textContent.match(/\d+/)[0], 10));
+    const totalPageNumbers = Math.ceil(totalItems / 9);
+
+    for (let index = 0; index < totalPageNumbers; index++) {
+        await loadMore(page);
+    }
+}
+
 
 // Iteratively fetch listing pages
 // Infinite scroll
@@ -15,7 +51,7 @@ const getCourseLinks = async (listPages) => {
     let foundCourseLinks = [];
 
     // Open browser
-    const browser = await Apify.launchPuppeteer({ ...proxyConfig, headless: true });
+    const browser = await Apify.launchPuppeteer({ ...proxyConfig, headless: false });
     // Open new page
     const page = await browser.newPage();
 
@@ -27,19 +63,23 @@ const getCourseLinks = async (listPages) => {
     // Iterate list urls
     for (const listPage of listPages) {
         // Open page
-        await page.goto(listPage, { timeout: 120000 });
+        await page.goto(listPage, {
+            waitFor: 'load',
+            timeout: 120000,
+        });
 
         // Infinite scroll
-        await puppeteer.infiniteScroll(page, {
-            waitForSecs: 20,
-        });
+        await autoScroll(page);
 
         // Fetch and concat links
         const links = await page.evaluate(() => Array.from(
             document.querySelectorAll('.discovery-card a'),
-        ).map(link => link.href).filter(link => link.href.includes('https://www.edx.org/course')));
+        ).map(link => link.href).filter(link => link.includes('https://www.edx.org/course')));
         foundCourseLinks = foundCourseLinks.concat(links);
     }
+
+    // Close browser
+    await browser.close();
 
     return foundCourseLinks;
 };
