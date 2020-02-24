@@ -33,6 +33,7 @@ async function loadMore(page) {
 // Get total number of items
 // Scroll until bottom
 async function autoScroll(page) {
+    await page.waitForSelector('.js-result-msg');
     const totalItems = await page.evaluate(() => parseInt(document.querySelector('.js-result-msg').textContent.match(/\d+/)[0], 10));
     const totalPageNumbers = Math.ceil(totalItems / 9);
 
