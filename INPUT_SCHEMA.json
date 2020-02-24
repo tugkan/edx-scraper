@@ -25,8 +25,8 @@
             "type": "array",
             "description": "URLs to start with. It should be category or product detail URLs",
             "prefill": [
-                { "url": "https://www.edx.org/course/?language=spanish" },
-                { "url": "https://www.edx.org/course/?subject=architecture" }
+                { "url": "https://www.edx.org/course?language=spanish" },
+                { "url": "https://www.edx.org/course?subject=architecture" }
             ],
             "editor": "requestListSources"
         },
