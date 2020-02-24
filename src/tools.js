@@ -51,7 +51,7 @@ const getCourseLinks = async (listPages) => {
     let foundCourseLinks = [];
 
     // Open browser
-    const browser = await Apify.launchPuppeteer({ ...proxyConfig, headless: false });
+    const browser = await Apify.launchPuppeteer({ ...proxyConfig, headless: true });
     // Open new page
     const page = await browser.newPage();
 
