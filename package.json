@@ -3,7 +3,8 @@
 	"version": "0.0.1",
 	"description": "edx courses scraper.",
 	"dependencies": {
-		"apify": "^0.19.1"
+		"apify": "^0.19.1",
+		"cheerio": "^1.0.0-rc.3"
 	},
 	"devDependencies": {
 		"@apify/eslint-config": "0.0.3",

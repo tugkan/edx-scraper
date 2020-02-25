@@ -5,7 +5,6 @@ edx.org Scraper is an [Apify actor](https://apify.com/actors) for extracting dat
 - [edx.org Scraper Input Parameters](#input-parameters)
 - [edx.org Scraper Input Example](#input-example)
 - [edx.org Scraper Course Output](#output)
-- [Extend output function](#extend-output-function)
 - [Compute Unit Consumption](#compute-unit-consumption)
 - [During The Run](#during-the-run)
 - [edx.org Export](#export)
@@ -19,9 +18,8 @@ The input of this scraper should be JSON containing the list of pages on edx tha
 | ----- | ---- | ----------- |
 | search | String | (optional)  | The keyword that you want to search on edx |
 | language | Array | (optional) List of languages that edx provides. You can fetch all courses of a language with it |
-| startUrls | Array | (optional) List of edx URLs. You should provide only URLs from `https://www.edx.org/course` |
+| startUrls | Array | (optional) List of edx URLs. You should provide only course detail URL or URLs from `https://www.edx.org/course` |
 | maxItems | Integer | (optional) Maximum number of items that output will contain |
-| extendOutputFunction | string | Function that takes a JQuery handle (page) as argument and returns data that will be merged with the default output. More information in [Extend output function](#extend-output-function) |
 | proxyConfig | Object | Proxy configuration |
 
 This solution requires the use of **Proxy servers**, either your own proxy servers or you can use <a href="https://www.apify.com/docs/proxy">Apify Proxy</a>.
@@ -53,17 +51,6 @@ The structure of each item in edx courses looks like this:
   "url": "https://courses.edx.org/courses/course-v1:JaverianaX+CRSx+1T2020/course/."
 }
 ```
-
-### Extend output function
-
-You can use this function to update the default output of this actor. This function gets a JQuery handle `$` as an argument so you can choose what data from the page you want to scrape. The output from this will function will get merged with the default output.
-
-The return value of this function has to be an object!
-
-You can return fields to achive 3 different things:
-- Add a new field - Return object with a field that is not in the default output
-- Change a field - Return an existing field with a new value
-- Remove a field - Return an existing field with a value `undefined`
 
 
 ### Compute Unit Consumption

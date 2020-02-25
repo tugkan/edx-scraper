@@ -5,53 +5,12 @@ const {
     utils: { log, puppeteer },
 } = Apify;
 
-// Load one page for infinite scroll
-async function loadMore(page) {
-    let height = 0;
-    const scrolled = await Promise.all([
-        page.evaluate(() => window.scrollBy(0, 100)),
-        page.waitForRequest(
-            (request) => {
-                const requestUrl = request.url();
-                return requestUrl.includes('https://www.edx.org/api/v1/catalog/search');
-            },
-            {
-                timeout: 500,
-            },
-        ).catch(() => null),
-    ]);
-
-    height += 100;
-
-    if (scrolled[1]) {
-        return height;
-    }
-
-    return await loadMore(page) + height;
-}
-
-// Get total number of items
-// Scroll until bottom
-async function autoScroll(page) {
-    await page.waitForSelector('.js-result-msg');
-    const totalItems = await page.evaluate(() => parseInt(document.querySelector('.js-result-msg').textContent.match(/\d+/)[0], 10));
-
-    const totalPageNumbers = Math.ceil(totalItems / 9);
-
-    for (let index = 0; index < totalPageNumbers; index++) {
-        log.info(`Iterating list page: ${index + 1}`);
-        await loadMore(page);
-    }
-}
-
 
 // Iteratively fetch listing pages
-// Infinite scroll
-// Fetch all the links
-const getCourseLinks = async (listPages) => {
-    log.info(`Getting course links from ${listPages.length} list(s)`);
+// Intercept search requests
+const getAPIRequests = async (listPages) => {
+    log.info(`Getting request from ${listPages.length} list(s)`);
     const { proxyConfig } = global.userInput;
-    let foundCourseLinks = [];
 
     // Open browser
     const browser = await Apify.launchPuppeteer({ ...proxyConfig, headless: true });
@@ -60,31 +19,45 @@ const getCourseLinks = async (listPages) => {
 
     // Block requests
     await puppeteer.blockRequests(page, {
-        urlPatterns: ['.jpg', '.jpeg', '.png', '.svg', '.gif', '.woff', '.pdf', '.zip', '*ads*', '*analytics*', '*facebook*', '*optimizely*'],
+        urlPatterns: ['.css', '.jpg', '.jpeg', '.png', '.svg', '.gif', '.woff', '.pdf', '.zip', '*ads*', '*analytics*', '*facebook*', '*optimizely*'],
     });
+
+    const requests = [];
 
     // Iterate list urls
     for (const listPage of listPages) {
+        // Set interception
+        let interceptedRequest = null;
+        await page.setRequestInterception(true);
+
+        // Promisify requests
+        const checkForSearchRequest = new Promise(resolve => page.on('request', (request) => {
+            const requestUrl = request.url();
+            if (requestUrl.includes('https://www.edx.org/api/v1/catalog/search')) {
+                interceptedRequest = request.url();
+                resolve();
+            }
+            request.continue();
+        }));
+
+
         // Open page
         await page.goto(listPage, {
             waitFor: 'load',
             timeout: 120000,
         });
 
-        // Infinite scroll
-        await autoScroll(page);
 
-        // Fetch and concat links
-        const links = await page.evaluate(() => Array.from(
-            document.querySelectorAll('.discovery-card a'),
-        ).map(link => link.href).filter(link => link.includes('https://www.edx.org/course')));
-        foundCourseLinks = foundCourseLinks.concat(links);
+        // Intercept & search for API request
+        await checkForSearchRequest;
+
+        requests.push(interceptedRequest);
     }
 
     // Close browser
     await browser.close();
 
-    return foundCourseLinks;
+    return requests;
 };
 
 // Retrieves sources and returns object for request list
@@ -121,13 +94,15 @@ exports.getSources = async () => {
         });
     }
 
-    // Get course links from list pages
-    const foundCourseLinks = await getCourseLinks(listPages);
+    // Get API list links
+    const foundListLinks = await getAPIRequests(listPages);
 
-    return coursePages.concat(foundCourseLinks.map(foundCouseLink => ({
-        url: foundCouseLink,
+    return coursePages.concat(foundListLinks.map(foundListLink => ({
+        url: foundListLink,
         userData: {
-            label: 'COURSE',
+            label: 'LIST',
+            baseURL: foundListLink,
+            page: 1,
         },
     })));
 };
@@ -140,4 +115,18 @@ exports.createRouter = (globalContext) => {
         log.debug(`Invoking route: ${routeName}`);
         return route(requestContext, globalContext);
     };
+};
+
+
+// Build proxy URL
+exports.createProxyUrl = (session) => {
+    const { proxyConfig } = global.userInput;
+
+    // Random return of proxyUrls
+    if (proxyConfig.proxyUrls && proxyConfig.proxyUrls.length > 0) {
+        return proxyConfig.proxyUrls[Math.floor(Math.random() * proxyConfig.proxyUrls.length)];
+    }
+
+    // Build proxy url
+    return `http://session-${session}${proxyConfig.apifyProxyGroups && proxyConfig.apifyProxyGroups.length > 0 ? `,groups-${proxyConfig.apifyProxyGroups.join('+')}` : ''}:${process.env.APIFY_PROXY_PASSWORD}@proxy.apify.com:8000`;
 };

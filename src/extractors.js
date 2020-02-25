@@ -1,19 +1,10 @@
 // Fetch course details
-const fetchCourse = ($) => {
-    // Get course key
-    const courseKey = decodeURIComponent(
-        $('.enroll-cta a').attr('href')
-            .replace('https://courses.edx.org/register?', '')
-            .split('&')[0]
-            .replace('course_id=', ''),
-    );
-
+const fetchCourse = (data) => {
     return {
-        courseTitle: $('#course-header h1').text().trim(),
-        subject: $('.breadcrumb-list .link').last().text().replace('Courses', '')
-            .trim(),
-        code: courseKey,
-        url: `https://courses.edx.org/courses/${courseKey}/course/.`,
+        courseTitle: data.title,
+        subject: data.subjects[0].title,
+        code: data.course_id,
+        url: `https://courses.edx.org/courses/${data.course_id}/course/.`,
     };
 };
 

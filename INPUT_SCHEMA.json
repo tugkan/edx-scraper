@@ -36,14 +36,6 @@
             "description": "Maximum number of items you want on your results",
             "editor": "number"
         },
-        "extendOutputFunction": {
-            "title": "Extend output function",
-            "type": "string",
-            "nullable": true,
-            "description": "Function that takes a JQuery handle ($) as argument and returns data that will be merged with the default output",
-            "prefill": "($) => { return {} }",
-            "editor": "javascript"
-        },
         "proxyConfig": {
             "title": "Proxy configuration",
             "type": "object",

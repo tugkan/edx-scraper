@@ -2,7 +2,7 @@ const Apify = require('apify');
 const tools = require('./tools');
 
 const {
-    utils: { log },
+    utils: { log, requestAsBrowser },
 } = Apify;
 
 
@@ -36,24 +36,39 @@ Apify.main(async () => {
     const router = tools.createRouter({ requestQueue });
 
     log.info('PHASE -- SETTING UP CRAWLER.');
-    const crawler = new Apify.CheerioCrawler({
+    const crawler = new Apify.BasicCrawler({
         requestQueue,
-        handlePageTimeoutSecs: 120,
-        requestTimeoutSecs: 120,
-        ignoreSslErrors: true,
-        ...proxyConfig,
+        handleRequestTimeoutSecs: 120,
+        maxRequestRetries: 10,
         useSessionPool: true,
-        handlePageFunction: async (context) => {
-            const { request, response, session } = context;
+        handleRequestFunction: async (context) => {
+            const { request, session } = context;
             log.debug(`CRAWLER -- Processing ${request.url}`);
 
-            // Status code check
-            if (!response || response.statusCode !== 200) {
+            // Send request
+            const response = await requestAsBrowser({
+                url: request.url,
+                method: 'GET',
+                proxyUrl: tools.createProxyUrl(session.id),
+                timeoutSecs: 120,
+                abortFunction: (res) => {
+                    // Status code check
+                    if (!res || res.statusCode !== 200) {
+                        session.markBad();
+                        return true;
+                    }
+                    session.markGood();
+                    return false;
+                },
+            }).catch((err) => {
                 session.markBad();
-                throw new Error(`We got blocked by target on ${request.url}`);
-            } else {
-                session.markGood();
-            }
+                throw new Error(err);
+            });
+
+            const data = response.body;
+
+            // Add to context
+            context.data = data;
 
             // Redirect to route
             await router(request.userData.label, context);
