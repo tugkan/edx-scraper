@@ -22,7 +22,7 @@ exports.LIST = async ({ data, request }, { requestQueue }) => {
 
     if (currentData && currentData.objects && currentData.objects.results && currentData.objects.results.length > 0) {
         // Fetch course details
-        const courses = currentData.objects.results.map(course => ({
+        const courses = currentData.objects.results.filter(course => course.key).map(course => ({
             name: course.title,
             link: `https://www.edx.org/api/catalog/v2/courses/${course.key}`,
         }));
