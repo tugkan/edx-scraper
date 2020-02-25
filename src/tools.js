@@ -14,18 +14,18 @@ const getAPIRequests = async (listPages) => {
 
     // Open browser
     const browser = await Apify.launchPuppeteer({ ...proxyConfig, headless: true });
-    // Open new page
-    const page = await browser.newPage();
-
-    // Block requests
-    await puppeteer.blockRequests(page, {
-        urlPatterns: ['.css', '.jpg', '.jpeg', '.png', '.svg', '.gif', '.woff', '.pdf', '.zip', '*ads*', '*analytics*', '*facebook*', '*optimizely*'],
-    });
-
     const requests = [];
 
     // Iterate list urls
     for (const listPage of listPages) {
+        // Open new page
+        const page = await browser.newPage();
+
+        // Block requests
+        await puppeteer.blockRequests(page, {
+            urlPatterns: ['.css', '.jpg', '.jpeg', '.png', '.svg', '.gif', '.woff', '.pdf', '.zip', '*ads*', '*analytics*', '*facebook*', '*optimizely*'],
+        });
+
         // Set interception
         let interceptedRequest = null;
         await page.setRequestInterception(true);
