@@ -79,8 +79,13 @@ exports.getSources = async () => {
         listPages.push(`https://www.edx.org/course?language=${encodeURIComponent(language)}`);
     }
 
+    if (language && language !== 'none' && search) {
+        listPages.push(`https://www.edx.org/course?search_query=${search.toLowerCase().replace(' ', '+')}&language=${encodeURIComponent(language)}`);
+    }
+
     if (startUrls && startUrls.length > 0) {
         startUrls.forEach((startUrl) => {
+            startUrl.url = startUrl.url.replace('course/?', 'course?');
             if (startUrl.url.split('/').length === 5 && startUrl.url.includes('course')) {
                 coursePages.push({
                     url: startUrl.url,

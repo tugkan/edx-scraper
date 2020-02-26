@@ -17,8 +17,8 @@
             "description": "Select a language that edx.org provides",
             "editor": "select",
             "default": "none",
-            "enum": ["none", "English", "Spanish", "French", "chinese", "mandarin", "italian", "Russian", "simplified", "Japanese", "German", "Portuguese", "arabic", "Korean", "Dutch", "Turkish", "Hindi", "hungarian", "tibetan"],
-            "enumTitles": ["None","English", "Spanish", "French", "chinese", "mandarin", "italian", "Russian", "simplified", "Japanese", "German", "Portuguese", "arabic", "Korean", "Dutch", "Turkish", "Hindi", "hungarian", "tibetan"]
+            "enum": ["none","English", "Spanish", "French", "Chinese - Mandarin", "Italian", "Russian", "Chinese - Simplified", "German", "Portuguese", "Japanese", "Arabic", "Dutch", "Korean", "Turkish", "Hindi", "Hungarian", "Tibetan"],
+            "enumTitles": ["None","English", "Spanish", "French", "Chinese - Mandarin", "Italian", "Russian", "Chinese - Simplified", "German", "Portuguese", "Japanese", "Arabic", "Dutch", "Korean", "Turkish", "Hindi", "Hungarian", "Tibetan"]
         },
         "startUrls": {
             "title": "Start URLs",
@@ -34,6 +34,7 @@
             "title": "Max Items",
             "type": "integer",
             "description": "Maximum number of items you want on your results",
+            "prefill": 10,
             "editor": "number"
         },
         "proxyConfig": {
