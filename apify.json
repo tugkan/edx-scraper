@@ -1,5 +1,5 @@
 {
-	"name": "apify-edx-actor",
+	"name": "edx-scaper",
 	"version": "0.1",
 	"buildTag": "latest",
 	"template": "cheerio_crawler"

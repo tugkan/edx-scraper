@@ -1,5 +1,5 @@
 {
-	"name": "apify-edx-actor",
+	"name": "edx-scraper",
 	"version": "0.0.1",
 	"description": "edx courses scraper.",
 	"dependencies": {

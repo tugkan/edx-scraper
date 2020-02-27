@@ -5,6 +5,7 @@ edx.org Scraper is an [Apify actor](https://apify.com/actors) for extracting dat
 - [edx.org Scraper Input Parameters](#input-parameters)
 - [edx.org Scraper Input Example](#input-example)
 - [edx.org Scraper Course Output](#output)
+- [Important Notes for the Output](#notes)
 - [Compute Unit Consumption](#compute-unit-consumption)
 - [During The Run](#during-the-run)
 - [edx.org Export](#export)
@@ -51,6 +52,10 @@ The structure of each item in edx courses looks like this:
   "url": "https://courses.edx.org/courses/course-v1:JaverianaX+CRSx+1T2020/course/."
 }
 ```
+
+## Important Notes for the Output
+
+When you search for a query which doesn't have any courses, edx just returns all the courses it got. That's why you should check the website for the best result.
 
 
 ### Compute Unit Consumption
