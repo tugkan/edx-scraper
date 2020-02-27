@@ -1,5 +1,5 @@
 {
-	"name": "edx-scaper",
+	"name": "edx-scraper",
 	"version": "0.1",
 	"buildTag": "latest",
 	"template": "cheerio_crawler"
